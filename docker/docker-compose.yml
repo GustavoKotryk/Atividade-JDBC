@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  db:
+    image: mysql/mysql-server:latest
+    container_name: manutencao
+    restart: always
+    environment:
+      - MYSQL_DATABASE=manutencaoIndu
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql-volume:/var/lib/ManutencaoIndustrial/docker
+volumes:
+  mysql-volume:
+    driver: local
