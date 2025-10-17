@@ -13,10 +13,10 @@ public class Maquinas {
 
 
 	public String getNome(){
-		return nome = nome;
+		return nome;
 	}
 	public String getSetor(){
-		return setor = setor;
+		return setor;
 	}
 
 	public void setNome(String nome){
