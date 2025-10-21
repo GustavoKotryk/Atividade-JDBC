@@ -1,6 +1,7 @@
 package model;
 
 public class Tecnicos {
+	protected int id;
 	protected String nome;
 	protected String especialidade;
 
@@ -8,6 +9,7 @@ public class Tecnicos {
 		if(nome == null || nome.trim().isEmpty()){
 			throw new IllegalArgumentException("A opção nome é obrigatória!");
 		}
+		this.id = id;
 		this.nome = nome;
 		this.especialidade = especialidade;
 	}
@@ -25,4 +27,7 @@ public class Tecnicos {
 	public void setEspecialidade(String especialidade){
 		this.especialidade = especialidade;
 	}
+
+	public int getId() {return id;}
+	public void setId(int id) {this.id = id;}
 }

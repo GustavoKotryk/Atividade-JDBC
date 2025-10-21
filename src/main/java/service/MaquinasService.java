@@ -6,7 +6,7 @@ import model.StatusMaquinas;
 import java.sql.SQLException;
 
 public class MaquinasService {
-	private final MaquinasDAO maquinasDAO;
+	public final MaquinasDAO maquinasDAO;
 
 	public MaquinasService(MaquinasDAO maquinasDAO) {
 		this.maquinasDAO = maquinasDAO;

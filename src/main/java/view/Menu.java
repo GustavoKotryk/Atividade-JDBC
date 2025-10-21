@@ -1,15 +1,18 @@
 package view;
 
+import dao.OrdemManutencaoDAO;
 import dao.PecaDAO;
+import model.Maquinas;
 import service.MaquinasService;
 import dao.MaquinasDAO;
 import dao.TecnicosDAO;
 import model.StatusMaquinas;
 import model.Tecnicos;
+import service.OrdemManutencaoService;
 import service.TecnicosService;
 import service.PecaService;
-
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -17,11 +20,22 @@ public class Menu {
 	private static MaquinasService maquinasService;
 	private static TecnicosService tecnicosService;
 	private static PecaService pecaService;
+	private static OrdemManutencaoService ordemManutencaoService;
+	private static MaquinasDAO maquinasDAO;
+	private static TecnicosDAO tecnicosDAO;
+	private static PecaDAO pecaDAO;
+	private static OrdemManutencaoDAO ordemManutencaoDAO;
 
 	public static void exibir() throws SQLException {
-		maquinasService = new MaquinasService(new MaquinasDAO());
-		tecnicosService = new TecnicosService(new TecnicosDAO());
-		pecaService = new PecaService(new PecaDAO());
+		maquinasDAO = new MaquinasDAO();
+		tecnicosDAO = new TecnicosDAO();
+		pecaDAO = new PecaDAO();
+		ordemManutencaoDAO = new OrdemManutencaoDAO();
+
+		maquinasService = new MaquinasService(maquinasDAO);
+		tecnicosService = new TecnicosService(tecnicosDAO);
+		pecaService = new PecaService(pecaDAO);
+		ordemManutencaoService = new OrdemManutencaoService(ordemManutencaoDAO, maquinasDAO);
 
 		int opcao;
 		do {
@@ -47,6 +61,9 @@ public class Menu {
 					break;
 				case 3:
 					adicionarPeca();
+					break;
+				case 4:
+					criarOrdemDeManutencao();
 					break;
 				case 0:
 					System.out.println("Saindo do sistema...");
@@ -170,7 +187,64 @@ public class Menu {
 		} catch (SQLException e) {
 			System.out.println("Erro no banco de dados: " + e.getMessage());
 		}
-
-
 	}
-}
+
+	private static void criarOrdemDeManutencao() {
+		System.out.println("\n=== Criar Ordem de Manutenção ===");
+		try {
+			List<Maquinas> maquinasOperacionais = maquinasDAO.listarMaquinasOperacionais();
+			if (maquinasOperacionais.isEmpty()) {
+				System.out.println("Nenhuma máquina operacional disponível para manutenção.");
+				return;
+			}
+
+			System.out.println("Máquinas operacionais disponíveis:");
+			maquinasOperacionais.forEach(m -> System.out.println("- " + m.getNome()));
+
+			System.out.print("\nDigite o NOME da máquina: ");
+			String nomeMaquinaSelecionada = sc.nextLine();
+
+			Maquinas maquinaEscolhida = maquinasOperacionais.stream()
+
+					.filter(m -> m.getNome().equalsIgnoreCase(nomeMaquinaSelecionada))
+					.findFirst()
+					.orElse(null);
+
+			if (maquinaEscolhida == null) {
+				System.out.println("Nome de máquina inválido ou máquina não está operacional!");
+				return;
+			}
+
+			List<Tecnicos> todosTecnicos = tecnicosDAO.listarTecnicos();
+			if (todosTecnicos.isEmpty()){
+				System.out.println("Nenhum técnico cadastrado no sistema.");
+				return;
+			}
+
+			System.out.println("\nTécnicos disponíveis:");
+			todosTecnicos.forEach(t -> System.out.println("- " + t.getNome()));
+
+			System.out.print("\nDigite o NOME do técnico: ");
+			String nomeTecnicoSelecionado = sc.nextLine();
+
+			Tecnicos tecnicoEscolhido = todosTecnicos.stream()
+					.filter(t -> t.getNome().equalsIgnoreCase(nomeTecnicoSelecionado))
+					.findFirst()
+					.orElse(null);
+
+			if (tecnicoEscolhido == null) {
+				System.out.println("Nome de técnico inválido!");
+				return;
+			}
+
+			ordemManutencaoService.criarOrdem(maquinaEscolhida.getId(), tecnicoEscolhido.getId());
+
+			System.out.println("\nOrdem de manutenção criada com sucesso para a máquina '"
+					+ maquinaEscolhida.getNome() + "'!");
+			System.out.println("O status da máquina foi atualizado para EM_MANUTENCAO.");
+
+		} catch (SQLException e) {
+			System.out.println("Erro de banco de dados: " + e.getMessage());
+		}
+	}
+	}

@@ -2,14 +2,14 @@ package model;
 
 import java.time.LocalDate;
 
-public class Ordem_Manutencao {
+public class OrdemManutencao {
 	private int id;
 	private int idMaquina;
 	private int idTecnico;
 	private LocalDate dataSolicitacao;
 	private StatusOrdem status;
 
-	public Ordem_Manutencao(int idMaquina, int idTecnico, LocalDate dataSolicitacao, StatusOrdem status) {
+	public OrdemManutencao(int idMaquina, LocalDate dataSolicitacao, StatusOrdem status) {
 		this.idMaquina = idMaquina;
 		this.idTecnico = idTecnico;
 		this.dataSolicitacao = dataSolicitacao;
