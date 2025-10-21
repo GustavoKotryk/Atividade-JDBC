@@ -25,7 +25,7 @@ public class TecnicosService {
 
 		try{
 			Tecnicos novoTecnico = new Tecnicos(nome, especialidade);
-			TecnicosDAO.adicionarTecnico(novoTecnico);
+			tecnicosDAO.adicionarTecnico(novoTecnico);
 			System.out.print("Técnico adicionado com sucesso!");
 		} catch (SQLException e) {
 			if (e.getMessage().contains("uk_tecnico_nome") ||

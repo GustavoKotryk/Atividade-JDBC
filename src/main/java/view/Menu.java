@@ -1,11 +1,13 @@
 package view;
 
+import dao.PecaDAO;
 import service.MaquinasService;
 import dao.MaquinasDAO;
 import dao.TecnicosDAO;
 import model.StatusMaquinas;
 import model.Tecnicos;
 import service.TecnicosService;
+import service.PecaService;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -14,10 +16,12 @@ public class Menu {
 	private static final Scanner sc = new Scanner(System.in);
 	private static MaquinasService maquinasService;
 	private static TecnicosService tecnicosService;
+	private static PecaService pecaService;
 
 	public static void exibir() throws SQLException {
 		maquinasService = new MaquinasService(new MaquinasDAO());
 		tecnicosService = new TecnicosService(new TecnicosDAO());
+		pecaService = new PecaService(new PecaDAO());
 
 		int opcao;
 		do {
@@ -40,6 +44,9 @@ public class Menu {
 					break;
 				case 2:
 					adicionarTecnico();
+					break;
+				case 3:
+					adicionarPeca();
 					break;
 				case 0:
 					System.out.println("Saindo do sistema...");
@@ -125,5 +132,45 @@ public class Menu {
 		} catch (IllegalArgumentException | SQLException e) {
 			System.out.println("Erro ao salvar o técnico: " + e.getMessage());
 		}
+	}
+
+
+	private static void adicionarPeca() {
+		System.out.println("\n=== Cadastro de Peças ===");
+
+		String nomePeca;
+		do {
+			System.out.print("Nome da peça: ");
+			nomePeca = sc.nextLine().trim();
+
+			if (nomePeca.isEmpty()) {
+				System.out.println("O nome é um campo obrigatório. Por favor, digite novamente.");
+			}
+		} while (nomePeca.isEmpty());
+
+		double estoque = -1;
+		do {
+			System.out.print("Quantidade em estoque: ");
+			try {
+				estoque = Double.parseDouble(sc.nextLine());
+
+				if (estoque < 0) {
+					System.out.println("O estoque deve ser um número maior ou igual a zero.");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Entrada inválida. Por favor, digite um número.");
+				estoque = -1;
+			}
+		} while (estoque < 0);
+
+		try {
+			pecaService.criarPeca(nomePeca, estoque);
+		} catch (IllegalArgumentException e) {
+			System.out.println("Erro: " + e.getMessage());
+		} catch (SQLException e) {
+			System.out.println("Erro no banco de dados: " + e.getMessage());
+		}
+
+
 	}
 }
